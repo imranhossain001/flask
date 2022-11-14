@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Violence prediction app</title>
+    <!-- <link rel = "icon" href = 
+"https://i.postimg.cc/d1T2qDc7/dog-logo-illustration-free-vector.webp" 
+        type = "image/x-icon"> -->
+    
+    <style>
+        * {
+            font-size:30px;
+        }
+    </style>
+</head>
+<body style="background-color:rgb(176, 189, 230);">  
+    
+    <input id="image-selector" type="file">    
+    <button type="button" id="predict-button" class="btn btn-primary">Predict</button>
+    <p style="font-weight:bold">Predictions</p>    
+    <p>Violence : <span id="dog-prediction"></span></p>
+    <p>Nonviolence : <span id="cat-prediction"></span></p>
+    <img id="selected-image" src=""/>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        let base64Image;
+        $("#image-selector").change(function() {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let dataURL = reader.result;
+                $('#selected-image').attr("src", dataURL);
+                base64Image = dataURL.replace("data:image/png;base64,","");
+                console.log(base64Image);
+            }
+            reader.readAsDataURL($("#image-selector")[0].files[0]);
+            $("#dog-prediction").text("");
+            $("#cat-prediction").text("");
+        });
+        
+        $("#predict-button").click(function(){
+            let message = {
+                image: base64Image
+            }
+            console.log(message);
+            $.post("http://127.0.0.1:5000/predict", JSON.stringify(message), function(response){
+                $("#dog-prediction").text(response.prediction.dog.toFixed(6));
+                $("#cat-prediction").text(response.prediction.cat.toFixed(6));
+                console.log(response);
+            });
+        }); 
+
+             
+    </script>
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.025);">
+        
+        <a class="text-reset fw-bold" > CSE499 GROUP 01 </a>
+    </div> 
+</body>
+</html>
